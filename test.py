@@ -53,6 +53,8 @@ user_string='12536554-k'
 #pass_string=os.getenv('rebeca')
 pass_string='rebeca'
 
+wd_path='C:\\Users\\RVK-02\\Downloads\\chromedriver_win32 (2)\\chromedriver.exe'
+
 
 LINK = 'http://homer.sii.cl/'
 while link_existe(LINK)==False:
@@ -66,7 +68,7 @@ prefs = {'download.default_directory' : cwd}#se establece la carpeta actual como
 chrome_options.add_experimental_option('prefs', prefs)#empaquetamos las preferencias
 #driver = webdriver.Chrome(chrome_options=chrome_options)
 
-driver = webdriver.Chrome('C:\\Users\\RVK-02\\Downloads\\chromedriver_win32\\chromedriver.exe',chrome_options=chrome_options)#partimos driver con opciones
+driver = webdriver.Chrome(wd_path,chrome_options=chrome_options)#partimos driver con opciones
 #pantalla completa
 #driver.maximize_window()
 driver.get(LINK)
