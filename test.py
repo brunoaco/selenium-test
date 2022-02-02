@@ -10,6 +10,7 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+import configparser
 
 import requests
 from urllib.error import URLError
@@ -47,13 +48,32 @@ def link_existe(LINK):
         print("There is no Error")
         return True
 
+config = configparser.ConfigParser()
+if(os.path.exists('file.ini')):
+    config.read('file.ini')
+    user_string=config['DEFAULT']['user_string']
+    #print(user_string)
+    pass_string=config['DEFAULT']['pass_string']
+    #print(pass_string)
+    wd_path=config['WEB DRIVER']['wd_path']
+    #print(wd_path)
+    print("desde ini")
+else:
+    user_string=input("rut [xxyyzz-k] :")
+    pass_string=input("pass :")
+    wd_path='C:\\Users\\RVK-02\\Downloads\\chromedriver_win32 (2)\\chromedriver.exe'
+    #config['DEFAULT']['user_string'] = user_string
+    #config['DEFAULT']['pass_string'] = pass_string
+    config['DEFAULT'] = {'user_string': user_string, 'pass_string': pass_string}
+    #config['WEB DRIVER']['wd_path'] = wd_path
+    config['WEB DRIVER'] = {'wd_path': wd_path}
+    config.write(open('config.ini', 'w'))
+    #must ask for credentials and save them
+    print("ini file:defaults")
 
-#user_string=os.getenv('12536554-k')
-user_string='12536554-k'
-#pass_string=os.getenv('rebeca')
-pass_string='rebeca'
 
-wd_path='C:\\Users\\RVK-02\\Downloads\\chromedriver_win32 (2)\\chromedriver.exe'
+
+input("Press Enter to continue...")
 
 
 LINK = 'http://homer.sii.cl/'
