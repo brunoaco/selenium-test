@@ -10,9 +10,12 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+import configparser
 
 import requests
 from urllib.error import URLError
+
+
 
 
 
@@ -40,23 +43,49 @@ def link_existe(LINK):
     try:
         response = requests.get(LINK)
         return True
-    except URLError as url_error:
-        print("Server Not Found")
+    except URLError as e:
+        print(e)
         return False
     else :
         print("There is no Error")
         return True
 
+config = configparser.ConfigParser()
+if(os.path.exists('file.ini')):
+    config.read('file.ini')
+    user_string=config['DEFAULT']['user_string']
+    #print(user_string)
+    pass_string=config['DEFAULT']['pass_string']
+    #print(pass_string)
+    wd_path=config['WEB DRIVER']['wd_path']
+    #print(wd_path)
+    print("desde ini")
+else:
+    user_string=input("rut [xxyyzz-k] :")
+    pass_string=input("pass :")
+    wd_path='C:\\Users\\contabilidad\\Downloads\\chromedriver_win32\\chromedriver.exe'
+    input("queda asumir que ha descargado el chromedriver correspondientea su navegador chrome, y que éste se encuentra en el siguiente path:\n\t" + wd_path)
+    #config['DEFAULT']['user_string'] = user_string
+    #config['DEFAULT']['pass_string'] = pass_string
+    config['DEFAULT'] = {'user_string': user_string, 'pass_string': pass_string}
+    #config['WEB DRIVER']['wd_path'] = wd_path
+    config['WEB DRIVER'] = {'wd_path': wd_path}
+    config.write(open('file.ini', 'w'))
+    #must ask for credentials and save them
+    print("ini file:defaults")
+    os.system("python test.py")
+    print("Restarting...")
+    exit()
 
-#user_string=os.getenv('12536554-k')
-user_string='12536554-k'
-#pass_string=os.getenv('rebeca')
-pass_string='rebeca'
 
 
-LINK = 'http://homer.sii.cl/'
+#input("Press Enter to continue...")
+
+
+LINK = 'https://homer.sii.cl/'
 while link_existe(LINK)==False:
     time.sleep(60)
+    print(".")
 
 
 cwd = os.getcwd()#direccion  del momento
@@ -66,20 +95,35 @@ prefs = {'download.default_directory' : cwd}#se establece la carpeta actual como
 chrome_options.add_experimental_option('prefs', prefs)#empaquetamos las preferencias
 #driver = webdriver.Chrome(chrome_options=chrome_options)
 
-driver = webdriver.Chrome('C:\\Users\\RVK-02\\Downloads\\chromedriver_win32\\chromedriver.exe',chrome_options=chrome_options)#partimos driver con opciones
+driver = webdriver.Chrome(wd_path,chrome_options=chrome_options)#partimos driver con opciones
 #pantalla completa
 #driver.maximize_window()
-driver.get(LINK)
+count=0
+while count<4:
+    try:
+        driver.get(LINK)
+        count=count+4
+    except TimeoutException as toe:
+        count=count+1
+        print("Timeout occured")
+        exit
 
-login_URL = "//ul[@id='main-menu']//a[contains(text(),'Mi Sii')]"
+#buscamos ingreso con user y pass de lapagina web
+#"//body/div[@id='my-wrapper']/div[1]/div[1]/nav[1]/div[1]/div[1]/ul[1]/li[1]/a[1]"        
+login_URL = "//body/div[@id='my-wrapper']/div[1]/div[1]/nav[1]/div[1]/div[1]/ul[1]/li[1]/a[1]"
+#login_URL = "//ul[@id='main-menu']//a[contains(text(),'Mi Sii')]"
 #login_element=WebDriverWait(driver, 20).until(lambda driver: driver.find_element_by_xpath(login_URL))
 #login_element.click()
-encuentra_elemento(login_URL).click()
+try:
+    encuentra_elemento(login_URL).click()
+except:
+    print("no encuentra el elemento 'login_URL'")
 
 
 
 
 #sleep(10)
+print('\n')
 sleep_visual(10,"ingresamos")
 
 user_URL = "//input[@id='rutcntr']"
@@ -178,7 +222,7 @@ while vuelta==True:
     select_empresa_mes="//select[@id='periodoMes']"
     try:
         select=Select(driver.find_element_by_xpath(select_empresa_mes))
-        select.select_by_visible_text('Octubre')
+        select.select_by_visible_text('Enero')
         #break#continue
     
     except NoSuchElementException as nse:
